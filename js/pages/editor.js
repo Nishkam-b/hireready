@@ -1,7 +1,7 @@
 // Resume editor: 4-step wizard with live preview, autosave, undo/redo and AI help.
 import { icon, esc, $, $$, toast, busy, modal, copyText, timeAgo } from '../ui.js';
 import { getResume, saveResume, uid } from '../store.js';
-import { ai, downloadDocx } from '../api.js';
+import { ai, downloadDocx, downloadPdf, inAppBrowser } from '../api.js';
 import { SECTIONS, PERSONAL_FIELDS, hasContent, sectionTitle, sectionKind, visibleSections } from '../schema.js';
 import { renderResume, styleOf, plainText } from '../render.js';
 import { TEMPLATES, CATEGORIES, FONTS, ACCENTS, getTemplate } from '../templates.js';
@@ -698,23 +698,24 @@ export function renderEditor(root, id, step, query) {
     form.innerHTML = `<h2>Review &amp; Download</h2><p class="lead">Final scan before export. Downloads are free, with no watermark.</p>
       ${atsReportHTML(r, { compact: true })}
       ${issues.length ? `<div class="hint" style="margin-top:16px;background:var(--bad-bg);border-color:#fecaca">${icon('alert', 18)}<div><b>${issues.length} important issue${issues.length > 1 ? 's' : ''}</b> found. You can still download, but fixing ${issues.length > 1 ? 'them' : 'it'} first is recommended.</div></div>` : ''}
-      ${!tpl.ats ? `<div class="hint" style="margin-top:16px">${icon('info', 18)}<div>You're using a creative template. The PDF keeps the design; the DOCX is always exported in an ATS-safe single-column layout.</div></div>` : ''}
+      ${inAppBrowser() ? `<div class="hint" style="margin-top:16px;background:var(--bad-bg);border-color:#fecaca">${icon('alert', 18)}<div><b>Downloads may not work in this app's built-in browser.</b> Tap the ⋮ or ··· menu and choose <b>"Open in browser"</b> (Chrome/Safari), then download. Your resume is saved on this device.</div></div>` : ''}
+      ${!tpl.ats ? `<div class="hint" style="margin-top:16px">${icon('info', 18)}<div>You're using a creative template. Download PDF and DOCX give an ATS-safe single-column version. To keep the template's design, use <b>Print with design</b> and choose "Save as PDF".</div></div>` : ''}
       <div class="card card-pad" style="margin-top:16px">
         <div class="field"><label for="fname">File name</label><input class="input" id="fname" value="${esc(fname)}"></div>
         <div class="add-row">
           <button class="btn btn-primary btn-lg" id="dl-pdf">${icon('download', 18)}Download PDF</button>
           <button class="btn btn-lg" id="dl-docx">${icon('file', 18)}Download DOCX</button>
-          <button class="btn btn-lg" id="dl-print">${icon('print', 18)}Print</button>
+          <button class="btn btn-lg" id="dl-print">${icon('print', 18)}Print with design</button>
         </div>
-        <p class="small muted" style="margin:12px 0 0">${icon('info', 14)} PDF opens your browser's print dialog — choose <b>"Save as PDF"</b> as the destination. The PDF has real, selectable and searchable text. Use the format the employer asks for.</p>
+        <p class="small muted" style="margin:12px 0 0">${icon('info', 14)} The file saves to your <b>Downloads</b> folder (on phones: Files › Downloads). PDF and DOCX have real, searchable text that ATS can read. <b>Print with design</b> keeps the exact template look: choose "Save as PDF" in the print window.</p>
         <div class="add-row" style="margin-top:14px"><button class="btn btn-sm" id="cp-txt">${icon('copy', 16)}Copy plain text</button><button class="btn btn-sm" id="dl-json">${icon('download', 16)}Backup (.json)</button><a class="btn btn-sm" href="#/tools/cover-letter?resume=${r.id}">${icon('mail', 16)}Write a cover letter</a><a class="btn btn-sm" href="#/tools/linkedin?resume=${r.id}">${icon('linkedin', 16)}LinkedIn summary</a></div>
       </div>
       <div class="form-foot"><button class="btn" data-stepgo="optimise">${icon('arrowLeft', 18)}Back</button><a class="btn btn-primary" href="#/">Finish ${icon('check', 18)}</a></div>`;
     bindAtsFixes(form);
     const name = () => { const v = $('#fname', form).value.trim().replace(/[^\w\- ]+/g, '') || 'Resume'; r._fileName = v; change(r, { noHistory: true }); return v; };
-    $('#dl-pdf', form).addEventListener('click', () => printResume(r, name()));
+    $('#dl-pdf', form).addEventListener('click', (e) => busy(e.currentTarget, () => downloadPdf(r, name()).then(() => toast('PDF downloaded — check your Downloads folder')), 'Preparing…'));
     $('#dl-print', form).addEventListener('click', () => printResume(r, name()));
-    $('#dl-docx', form).addEventListener('click', (e) => busy(e.currentTarget, () => downloadDocx(r, name()).then(() => toast('DOCX downloaded')), 'Preparing…'));
+    $('#dl-docx', form).addEventListener('click', (e) => busy(e.currentTarget, () => downloadDocx(r, name()).then(() => toast('DOCX downloaded — check your Downloads folder')), 'Preparing…'));
     $('#cp-txt', form).addEventListener('click', () => copyText(plainText(r)));
     $('#dl-json', form).addEventListener('click', () => {
       const a = document.createElement('a');
