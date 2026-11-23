@@ -1,0 +1,36 @@
+# Render Blueprint — the HireReady API server (free plan).
+# The Gemini key is NOT stored here: Render asks for it when you create the
+# service, and keeps it as a secret environment variable.
+services:
+  - type: web
+    name: hireready-api
+    runtime: node
+    plan: free
+    region: singapore
+    buildCommand: npm ci --omit=dev
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false # entered privately in the Render dashboard
+      - key: AI_PROVIDER
+        value: gemini
+      - key: GEMINI_MODEL
+        value: gemini-flash-lite-latest
+      - key: GEMINI_FALLBACK_MODELS
+        value: gemini-flash-latest
+      - key: ALLOWED_ORIGINS
+        value: https://nishtek.in,https://www.nishtek.in
+      - key: TRUST_PROXY
+        value: "1"
+      - key: FORCE_HTTPS
+        value: "1"
+      - key: RATE_LIMIT_PER_MINUTE
+        value: "20"
+      - key: AI_DAILY_LIMIT_PER_USER
+        value: "25"
+      - key: AI_DAILY_GLOBAL_LIMIT
+        value: "450"
+      - key: AI_CACHE_MINUTES
+        value: "360"

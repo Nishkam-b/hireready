@@ -1,0 +1,78 @@
+/* Resume document. Sizes in pt/mm so screen preview matches the printed PDF. */
+.rs { width: var(--pw); min-height: var(--ph); background: #fff; color: #1f2937; font-family: var(--font); font-size: var(--fs); line-height: var(--lh); padding: var(--pad); box-shadow: 0 2px 14px rgba(0,0,0,.08); position: relative; overflow-wrap: anywhere; }
+.rs a { color: inherit; text-decoration: none; }
+.rs h1 { font-size: 2.35em; font-weight: 800; color: #111827; letter-spacing: -.01em; line-height: 1.1; margin: 0; }
+.rs-headline { color: var(--acc); font-size: 1.25em; font-weight: 500; margin-top: 4px; }
+.rs-head { display: flex; justify-content: space-between; gap: 20px; align-items: center; margin-bottom: calc(var(--gap) * .9); }
+.rs-head-txt { min-width: 0; flex: 1; }
+.rs-contact { display: flex; flex-wrap: wrap; gap: 3px 10px; margin-top: 9px; font-size: .9em; color: #374151; }
+.rs-c { display: inline-flex; align-items: center; gap: 5px; }
+.rs-c .ic { color: #374151; }
+.rs-sep { color: #9ca3af; }
+.rs-photo { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; flex: none; }
+.rs-sec { margin-top: var(--gap); }
+.rs h2 { font-size: 1.05em; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #111827; margin: 0 0 7px; padding-bottom: 3px; border-bottom: 1.3px solid #4b5563; }
+.rs p { margin: 0; }
+.rs ul { margin: 3px 0 0; padding-left: 1.25em; }
+.rs li { margin: 1.5px 0; }
+.rs-entry { margin-bottom: calc(var(--gap) * .6); break-inside: avoid; }
+.rs-row { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; }
+.rs-title { font-weight: 700; font-size: 1.07em; color: #111827; }
+.rs-date { font-size: .92em; color: #374151; white-space: nowrap; }
+.rs-sub { font-size: .95em; color: #374151; font-weight: 500; }
+.rs-link { font-size: .9em; color: var(--acc); }
+.rs-inline { line-height: 1.6; }
+.rs-dot { color: #9ca3af; margin: 0 2px; }
+.rs-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.rs-tags span { border: 1px solid #d1d5db; border-radius: 6px; padding: 3px 10px; font-size: .92em; }
+.rs-empty { color: #9ca3af; text-align: center; margin-top: 80px; font-size: 1.1em; }
+
+/* Heading styles */
+.h-caps h2 { border-bottom: 0; color: var(--acc); letter-spacing: .16em; }
+.h-rule h2 { color: #111827; border-bottom-color: var(--acc); }
+.h-rule-center h2 { text-align: center; border-bottom: 1px solid #111827; letter-spacing: .1em; }
+.h-underline h2 { text-transform: none; letter-spacing: 0; font-size: 1.15em; border-bottom: 0; text-decoration: underline; text-underline-offset: 3px; }
+.h-bar h2 { border-bottom: 0; border-left: 4px solid var(--acc); padding: 1px 0 1px 9px; color: #111827; }
+.h-pill h2 { border-bottom: 0; display: inline-block; background: color-mix(in srgb, var(--acc) 12%, white); color: var(--acc); padding: 3px 12px; border-radius: 6px; letter-spacing: .08em; }
+.h-pill .rs-tags span { background: color-mix(in srgb, var(--acc) 8%, white); border-color: color-mix(in srgb, var(--acc) 25%, white); }
+.h-side .rs-sec { display: grid; grid-template-columns: 26% 1fr; gap: 14px; }
+.h-side h2 { border-bottom: 0; color: var(--acc); font-size: .9em; padding-top: 2px; }
+
+/* Header styles */
+.hd-center .rs-head { justify-content: center; text-align: center; }
+.hd-center .rs-contact { justify-content: center; }
+.hd-band .rs-head { background: var(--acc); color: #fff; margin: calc(var(--pad) * -1) calc(var(--pad) * -1) var(--gap); padding: calc(var(--pad) * .9) var(--pad); }
+.hd-band .rs-head h1, .hd-band .rs-headline, .hd-band .rs-contact, .hd-band .rs-c .ic, .hd-band .rs-sep { color: #fff; }
+.hd-band .rs-headline { opacity: .9; }
+.hd-split .rs-head { border-bottom: 2px solid var(--acc); padding-bottom: 12px; }
+
+/* Template specifics */
+.tpl-harvard h1 { font-weight: 600; font-size: 2.2em; letter-spacing: .02em; }
+.tpl-harvard .rs-headline { color: #374151; font-style: italic; }
+.tpl-banker h1, .tpl-boardroom h1 { font-weight: 700; letter-spacing: .03em; text-transform: uppercase; font-size: 2em; }
+.tpl-govt h1 { font-size: 1.9em; font-weight: 700; }
+.tpl-govt .rs-headline { color: #111827; }
+.tpl-nordic h1 { font-weight: 300; letter-spacing: .02em; }
+.tpl-executive h1, .tpl-director h1 { font-size: 2.2em; }
+.tpl-fresher h1, .tpl-studio h1 { font-weight: 700; }
+.tpl-classic .rs-headline { color: #374151; }
+
+/* Sidebar layout */
+.lay-sidebar .rs-cols { display: grid; grid-template-columns: 32% 1fr; gap: 22px; }
+.lay-sidebar .rs-side { background: color-mix(in srgb, var(--acc) 7%, white); margin: 0 0 calc(var(--pad) * -1) calc(var(--pad) * -1); padding: 4px 14px 14px calc(var(--pad) * .7); border-radius: 0 10px 0 0; }
+.lay-sidebar .rs-side .rs-sec:first-child { margin-top: 8px; }
+.lay-sidebar .rs-side .rs-tags span { background: #fff; }
+.lay-sidebar .rs-main .rs-sec:first-child { margin-top: 0; }
+.lay-sidebar.h-caps h2 { color: var(--acc); }
+
+/* Page break guides on screen */
+.page-guides { position: relative; }
+.page-guides .pg-line { position: absolute; left: 0; right: 0; border-top: 1px dashed #f87171; pointer-events: none; z-index: 2; }
+.page-guides .pg-line span { position: absolute; right: 6px; top: -18px; font-size: 11px; color: #ef4444; background: #fff; padding: 0 6px; border-radius: 4px; font-family: Inter, sans-serif; }
+
+@media print {
+  .rs { box-shadow: none; width: auto; min-height: 0; }
+  .pg-line { display: none; }
+  .rs-entry, .rs li { break-inside: avoid; }
+  .rs h2 { break-after: avoid; }
+}
