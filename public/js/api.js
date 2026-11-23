@@ -43,6 +43,14 @@ export async function downloadDocx(resume, fileName) {
   saveBlob(await res.blob(), `${fileName}.docx`);
 }
 
+export async function downloadPdf(resume, fileName) {
+  const res = await request(`${API_BASE}/api/files/export/pdf`, { resume: lean(resume), fileName }, { raw: true });
+  saveBlob(await res.blob(), `${fileName}.pdf`);
+}
+
+// Instagram / Facebook / other in-app browsers usually block file downloads.
+export const inAppBrowser = () => /Instagram|FBAN|FBAV|FB_IAB|Line\/|Snapchat|; wv\)/i.test(navigator.userAgent);
+
 export async function downloadCoverLetter(letter, name) {
   const res = await request(`${API_BASE}/api/files/export/cover-letter`, { letter, name }, { raw: true });
   saveBlob(await res.blob(), `${name || 'Cover'} Cover Letter.docx`);

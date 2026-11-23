@@ -3,6 +3,7 @@ import multer from 'multer';
 import mammoth from 'mammoth';
 import { createRequire } from 'node:module';
 import { buildDocx } from '../export/docx.js';
+import { buildPdf } from '../export/pdf.js';
 
 const require = createRequire(import.meta.url);
 // Import the library file directly (the package index runs debug code).
@@ -67,6 +68,23 @@ router.post('/export/docx', async (req, res) => {
   } catch (e) {
     console.error('[docx]', e);
     res.status(500).json({ error: 'Could not create the DOCX file.' });
+  }
+});
+
+router.post('/export/pdf', async (req, res) => {
+  try {
+    const resume = req.body?.resume;
+    if (!resume?.personal) return res.status(400).json({ error: 'Missing resume.' });
+    const buf = await buildPdf(resume);
+    const fname = String(req.body.fileName || 'resume').replace(/[^\w\- ]+/g, '').trim() || 'resume';
+    res.set({
+      'Content-Type': 'application/pdf',
+      'Content-Disposition': `attachment; filename="${fname}.pdf"`,
+    });
+    res.send(buf);
+  } catch (e) {
+    console.error('[pdf]', e);
+    res.status(500).json({ error: 'Could not create the PDF file.' });
   }
 });
 
