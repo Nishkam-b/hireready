@@ -51,6 +51,7 @@ export function renderEditor(root, id, step, query) {
         <button class="icon-btn" id="redo" aria-label="Redo" title="Redo (Ctrl+Y)">${icon('redo')}</button>
         <button class="btn mobile-prev-toggle" id="mprev">${icon('eye', 18)}<span>Preview</span></button>
         <button class="btn" id="save">${icon('cloud', 18)}<span>Save</span></button>
+        <button class="btn" id="top-dl" aria-haspopup="menu">${icon('download', 18)}<span>Download</span>${icon('chevDown', 16)}</button>
         <button class="btn btn-primary" id="next"><span>Next</span>${icon('arrowRight', 18)}</button>
       </div>
     </header>
@@ -747,6 +748,43 @@ export function renderEditor(root, id, step, query) {
     if (i === STEPS.length - 1) location.hash = '#/'; else setStep(STEPS[i + 1].id);
   });
   $('#save', root).addEventListener('click', () => { saveResume(r); updateSaved(); toast('Saved in this browser'); });
+  $('#top-dl', root).addEventListener('click', (e) => downloadMenu(e.currentTarget));
+
+  /* Download dropdown (top bar + full preview): PDF, DOCX, then print. */
+  function downloadMenu(btn) {
+    const open = $('.dl-menu');
+    if (open) { open.remove(); if (open._for === btn) return; }
+    const fname = () => (r._fileName || defaultFileName(r)).replace(/[^\w\- ]+/g, '') || 'Resume';
+    const menu = document.createElement('div');
+    menu.className = 'dl-menu';
+    menu._for = btn;
+    menu.setAttribute('role', 'menu');
+    menu.innerHTML = `
+      <button role="menuitem" data-k="pdf">${icon('download', 18)}<span><b>Download PDF</b><small>Best for job portals &amp; email</small></span></button>
+      <button role="menuitem" data-k="docx">${icon('file', 18)}<span><b>Download Word (DOCX)</b><small>Editable in MS Word / Google Docs</small></span></button>
+      <hr>
+      <button role="menuitem" data-k="print">${icon('print', 18)}<span><b>Print with design</b><small>Keeps the exact template look</small></span></button>`;
+    document.body.appendChild(menu);
+    const b = btn.getBoundingClientRect();
+    const mw = menu.offsetWidth;
+    menu.style.left = `${Math.max(8, Math.min(b.right - mw, innerWidth - mw - 8))}px`;
+    const below = b.bottom + 6 + menu.offsetHeight < innerHeight;
+    menu.style.top = `${below ? b.bottom + 6 : b.top - 6 - menu.offsetHeight}px`;
+    const close = () => { menu.remove(); document.removeEventListener('mousedown', outside, true); document.removeEventListener('keydown', esc); };
+    const outside = (e) => { if (!menu.contains(e.target) && !btn.contains(e.target)) close(); };
+    const esc = (e) => { if (e.key === 'Escape') close(); };
+    setTimeout(() => { document.addEventListener('mousedown', outside, true); document.addEventListener('keydown', esc); }, 0);
+    menu.querySelector('button').focus();
+    menu.addEventListener('click', (e) => {
+      const k = e.target.closest('[data-k]')?.dataset.k;
+      if (!k) return;
+      close();
+      saveResume(r);
+      if (k === 'print') return printResume(r, fname());
+      const fn = k === 'pdf' ? downloadPdf : downloadDocx;
+      busy(btn, () => fn(r, fname()).then(() => toast(`${k === 'pdf' ? 'PDF' : 'Word file'} downloaded — check your Downloads folder`)), 'Preparing…');
+    });
+  }
   $('#undo', root).addEventListener('click', () => travel(-1));
   $('#redo', root).addEventListener('click', () => travel(1));
   $('#mprev', root).addEventListener('click', () => { $('#ed-prev', root).classList.toggle('mobile-hidden'); updatePreview(); $('#ed-prev', root).scrollIntoView({ behavior: 'smooth' }); });
@@ -757,7 +795,7 @@ export function renderEditor(root, id, step, query) {
   }));
   const full = () => {
     const m = modal({ title: 'Full preview', wide: true, body: `<div style="overflow:auto;display:flex;justify-content:center;background:#f3f4f6;padding:20px;border-radius:10px">${renderResume(r)}</div>`, footer: `<button class="btn" data-close>Close</button><button class="btn btn-primary" id="fp-dl">${icon('download', 18)}Download</button>` });
-    $('#fp-dl', m.el).addEventListener('click', () => { m.close(); setStep('download'); });
+    $('#fp-dl', m.el).addEventListener('click', (e) => downloadMenu(e.currentTarget));
   };
   $('#expand', root).addEventListener('click', full);
   $('#full', root).addEventListener('click', full);
