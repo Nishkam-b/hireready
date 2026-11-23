@@ -49,6 +49,7 @@ Return JSON:
  "suggestedSkills": ["skills common for the target job the candidate did NOT mention — to be confirmed by them"],
  "missingInfo": ["short questions about important info that is missing, e.g. 'What were your dates at X?'"]
 }
+"fullName" must be the candidate's COMPLETE name exactly as they wrote it (first, middle and last name) — never shorten it to a first name.
 Leave any unknown field as an empty string or empty array. Dates as written by the user (e.g. "Jan 2023").`,
   }),
 
@@ -56,7 +57,7 @@ Leave any unknown field as an empty string or empty array. Dates as written by t
   parseResume: ({ text }) => ({
     json: true,
     temperature: 0.1,
-    prompt: `Extract this resume into JSON. Copy facts exactly; do not improve wording or add anything.
+    prompt: `Extract this resume into JSON. Copy facts exactly; do not improve wording or add anything. "fullName" is the complete name (first, middle and last), never just the first name.
 Resume text:
 """${clip(text, 15000)}"""
 

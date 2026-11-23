@@ -4,6 +4,7 @@ import net from 'node:net';
 import { createHash } from 'node:crypto';
 import { getProvider } from '../ai/provider.js';
 import { tasks, SYSTEM } from '../ai/prompts.js';
+import { fixFullName } from '../ai/fixName.js';
 
 const router = Router();
 
@@ -111,6 +112,8 @@ for (const [path, { task, require }] of Object.entries(ENDPOINTS)) {
     try {
       const spec = tasks[task](input);
       const result = await getProvider().generate({ system: SYSTEM, ...spec });
+      if (task === 'generateResume') fixFullName(result, input.about);
+      if (task === 'parseResume') fixFullName(result, input.text);
       if (task === 'match' && typeof result.score === 'number') {
         result.score = Math.max(0, Math.min(100, Math.round(result.score)));
       }
